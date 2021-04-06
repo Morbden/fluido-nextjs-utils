@@ -61,15 +61,19 @@ const deepField = (field: string, val: any) => {
   )
 }
 
+type GetStaticFetchURIType = (data?: ComputeFunctionParams) => RequestInfo
 type GetStaticFetchOptionsType = (data?: ComputeFunctionParams) => RequestInit
 
 export const getStaticFetch = (
   name: string,
-  uri: RequestInfo,
-  opt?: GetStaticFetchOptionsType,
+  uri: RequestInfo | GetStaticFetchURIType,
+  opt?: RequestInit | GetStaticFetchOptionsType,
 ) => {
   return async (data: ComputeFunctionParams) => {
-    const result = await fetchAPI(uri, opt ? opt(data) : null)
+    const result = await fetchAPI(
+      typeof uri === 'function' ? uri(data) : uri,
+      opt ? (typeof opt === 'function' ? opt(data) : opt) : null,
+    )
     if ('json' in result) {
       return deepField(name, result.json)
     } else {
