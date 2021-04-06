@@ -1,0 +1,43 @@
+{
+  "name": "@fluido/nextjs-utils",
+  "version": "0.2.2",
+  "description": "Fluido nextjs utils",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Morbden/fluido-nextjs-utils.git"
+  },
+  "keywords": [
+    "fluido",
+    "utils",
+    "nextjs"
+  ],
+  "author": "Morbden",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "pub": "npm publish --access public",
+    "pub:all": "run-s build pub"
+  },
+  "dependencies": {
+    "@fluido/react-utils": "^0.3.0",
+    "cookie": "^0.4.1",
+    "cors": "^2.8.5",
+    "deep-equal": "^2.0.5",
+    "deepmerge": "^4.2.2",
+    "express-json-validator-middleware": "^2.1.1"
+  },
+  "peerDependencies": {
+    "firebase-admin": "^9.6.0",
+    "next": "^10.1.3"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.37",
+    "@types/react": "^17.0.3",
+    "firebase-admin": "^9.6.0",
+    "next": "^10.1.3",
+    "typescript": "^4.2.3"
+  }
+}
