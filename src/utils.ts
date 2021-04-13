@@ -75,9 +75,9 @@ export const getStaticFetch = (
       opt ? (typeof opt === 'function' ? opt(data) : opt) : null,
     )
     if ('json' in result) {
-      return deepField(name, result.json)
+      return deepField(name, result.json || {})
     } else {
-      return deepField(name, result.text)
+      return deepField(name, result.text || '')
     }
   }
 }
