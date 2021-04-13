@@ -72,7 +72,7 @@ export const getStaticFetch = (
   return async (data: ComputeFunctionParams) => {
     const result = await fetchAPI(
       typeof uri === 'function' ? uri(data) : uri,
-      opt ? (typeof opt === 'function' ? opt(data) : opt) : null,
+      opt ? (typeof opt === 'function' ? opt(data) : opt) : {},
     )
     if ('json' in result) {
       return deepField(name, result.json || {})
