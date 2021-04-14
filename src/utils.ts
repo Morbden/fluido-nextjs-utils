@@ -36,7 +36,13 @@ export const joinStaticProps = (...fns: ComputeFunction[]) => {
         ...config,
       } as NextStaticPropsReturn
     } catch (err) {
-      console.error(err)
+      if (err && typeof err === 'object' && !(err instanceof Error))
+        return {
+          revalidate: 5,
+          ...config,
+          ...err,
+        } as NextStaticPropsReturn
+
       return {
         revalidate: 5,
         notFound: true,
