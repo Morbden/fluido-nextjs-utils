@@ -15,7 +15,7 @@
     "target": "ES6",
     "outDir": "dist"
   },
-  "exclude": ["node_modules", "src/**/*.story.*"],
+  "exclude": ["node_modules"],
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",

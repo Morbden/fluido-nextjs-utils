@@ -1,5 +1,8 @@
-import * as api from './api'
-
-import { getStaticFetch, getStaticInternal, joinStaticProps } from './utils'
-
-export { api, getStaticFetch, getStaticInternal, joinStaticProps }
+export type { AppHandler, AppNext, AppRequest, AppResponse } from './api'
+export {
+  MiddlewareWrapper,
+  blockRequestMethod,
+  loadFirebaseClaims,
+  verifyToken,
+} from './api'
+export { getStaticFetch, getStaticInternal, joinStaticProps } from './utils'
