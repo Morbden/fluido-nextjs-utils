@@ -173,7 +173,7 @@ export const loadFirebaseClaims: LoadFirebaseClaimsType =
             request.claimsRef = request.userRef.collection('claims')
             request.claims =
               (await request.claimsRef.get()).docs.reduce((prev, doc) => {
-                return { ...prev, [doc.id]: doc.data() }
+                return { ...prev, [doc.id]: Object.values(doc.data()) }
               }, {}) || {}
           }
           next()
