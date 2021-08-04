@@ -1,11 +1,12 @@
 import cookie from 'cookie'
 import cors from 'cors'
-import {
+import type {
   app as FirebaseApp,
   auth as FirebaseAuth,
   database as FirebaseDatabase,
+  firestore as FirebaseFirestore,
 } from 'firebase-admin'
-import { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next'
 
 export interface AppResponse<T = any> extends NextApiResponse<T> {
   cookie(key: string, value: any, opt?: object): void
@@ -18,8 +19,8 @@ interface TypedMap<T = any> {
 export interface AppRequest<B = TypedMap> extends NextApiRequest {
   token?: string
   body: B
-  claimsRef: FirebaseDatabase.Reference
-  userRef: FirebaseDatabase.Reference
+  claimsRef: FirebaseDatabase.Reference | FirebaseFirestore.CollectionReference
+  userRef: FirebaseDatabase.Reference | FirebaseFirestore.DocumentReference
   user: FirebaseAuth.DecodedIdToken
   automation: boolean
   authenticated: boolean
@@ -61,7 +62,7 @@ interface LoadAutomationKeysClaimsType {
 }
 
 interface LoadFirebaseClaimsType {
-  (firebase: FirebaseApp.App): AppHandler
+  (firebase: FirebaseApp.App, dbUse?: 'firestore' | 'database'): AppHandler
 }
 
 export const MiddlewareWrapper: MiddlewareWrapperType =
@@ -152,7 +153,8 @@ export const loadAutomationKeysClaims: LoadAutomationKeysClaimsType =
   }
 
 export const loadFirebaseClaims: LoadFirebaseClaimsType =
-  (firebase) => (request, _, next) => {
+  (firebase, dbUse = 'database') =>
+  (request, _, next) => {
     if (request.token && !request.authenticated) {
       request.automation = false
       request.authenticated = false
@@ -162,9 +164,18 @@ export const loadFirebaseClaims: LoadFirebaseClaimsType =
         .then(async (user) => {
           request.authenticated = !!user
           request.user = user
-          request.userRef = firebase.database().ref(`users/${user.uid}`)
-          request.claimsRef = request.userRef.child('claims')
-          request.claims = (await request.claimsRef.once('value')).val() || {}
+          if (dbUse === 'database') {
+            request.userRef = firebase.database().ref(`users/${user.uid}`)
+            request.claimsRef = request.userRef.child('claims')
+            request.claims = (await request.claimsRef.once('value')).val() || {}
+          } else if (dbUse === 'firestore') {
+            request.userRef = firebase.firestore().doc(`users/${user.uid}`)
+            request.claimsRef = request.userRef.collection('claims')
+            request.claims =
+              (await request.claimsRef.get()).docs.reduce((prev, doc) => {
+                return { ...prev, [doc.id]: doc.data() }
+              }, {}) || {}
+          }
           next()
         })
         .catch(() => next())
